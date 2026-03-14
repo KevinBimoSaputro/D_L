@@ -320,6 +320,43 @@ with tab_list:
                     height=120,
                 )
 
+        st.markdown("#### Hapus Item dari Database")
+        delete_col1, delete_col2 = st.columns([2, 1])
+
+        with delete_col1:
+            delete_item_name = st.selectbox(
+                "Pilih item yang mau dihapus",
+                df["name"].tolist(),
+                key="delete_item_select",
+            )
+
+        with delete_col2:
+            confirm_delete = st.checkbox(
+                "Saya yakin mau hapus", key="delete_item_confirm"
+            )
+
+        delete_clicked = st.button(
+            "Hapus Item", type="secondary", use_container_width=True, key="delete_button"
+        )
+
+        if delete_clicked:
+            if not delete_item_name:
+                st.error("Pilih dulu item yang mau dihapus.")
+            elif not confirm_delete:
+                st.error("Centang dulu kotak konfirmasi sebelum menghapus.")
+            else:
+                try:
+                    _ = (
+                        st_supabase.table("dinkum_items")
+                        .delete()
+                        .eq("name", delete_item_name)
+                        .execute()
+                    )
+                    st.success(f"Item '{delete_item_name}' berhasil dihapus.")
+                    reset_data_cache_and_rerun()
+                except Exception as e:
+                    st.error(f"Gagal menghapus item dari Supabase: {e}")
+
 # =========================
 # Tab 2: Form Item
 # =========================
