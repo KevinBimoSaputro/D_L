@@ -61,7 +61,7 @@ def init_realtime_subscription():
                     "schema": "public",
                     "table": "dinkum_items",
                 },
-                lambda payload: st.experimental_rerun(),
+                lambda payload: st.rerun(),
             )
             .subscribe()
         )
@@ -91,7 +91,7 @@ def fetch_all_items():
 
 
 def reset_data_cache_and_rerun():
-    st.experimental_rerun()
+    st.rerun()
 
 
 # -----------------------------------------------------------------------------
@@ -345,6 +345,7 @@ with tab_list:
             elif not confirm_delete:
                 st.error("Centang dulu kotak konfirmasi sebelum menghapus.")
             else:
+                success_delete = False
                 try:
                     _ = (
                         st_supabase.table("dinkum_items")
@@ -353,9 +354,12 @@ with tab_list:
                         .execute()
                     )
                     st.success(f"Item '{delete_item_name}' berhasil dihapus.")
-                    reset_data_cache_and_rerun()
+                    success_delete = True
                 except Exception as e:
                     st.error(f"Gagal menghapus item dari Supabase: {e}")
+
+                if success_delete:
+                    reset_data_cache_and_rerun()
 
 # =========================
 # Tab 2: Form Item
@@ -547,6 +551,7 @@ with tab_form:
                     "updated_at": datetime.utcnow().isoformat(),
                 }
 
+                success_save = False
                 try:
                     if mode == "Tambah Item Baru":
                         _ = (
@@ -567,11 +572,13 @@ with tab_form:
 
                     # Minta reset form pada rerun berikutnya
                     st.session_state["form_reset_needed"] = True
-
-                    reset_data_cache_and_rerun()
+                    success_save = True
 
                 except Exception as e:
                     st.error(f"Gagal menyimpan ke Supabase: {e}")
+
+                if success_save:
+                    reset_data_cache_and_rerun()
 
 # -----------------------------------------------------------------------------
 # Info tambahan
