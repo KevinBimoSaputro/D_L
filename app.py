@@ -378,12 +378,15 @@ with tab_form:
         form_col1, form_col2 = st.columns(2)
 
         with form_col1:
-            name_input = st.text_input("Nama Item *", value=default_name)
+            name_input = st.text_input(
+                "Nama Item *", value=default_name, key="form_name_input"
+            )
             sell_price_input = st.number_input(
                 "Harga Jual (Dinks) *",
                 min_value=0,
                 step=10,
                 value=default_sell_price,
+                key="form_sell_price_input",
             )
             category_input = st.selectbox(
                 "Kategori",
@@ -421,6 +424,7 @@ with tab_form:
                     ]
                     else 0
                 ),
+                key="form_category_input",
             )
 
         with form_col2:
@@ -445,17 +449,31 @@ with tab_form:
                 "NPC (optional, pilih atau tulis baru)",
                 npc_options_form,
                 index=default_npc_index,
+                key="form_npc_select",
             )
 
             if selected_npc_option == "(Tulis nama NPC baru)":
-                npc_input = st.text_input("Nama NPC", value=default_npc)
+                npc_input = st.text_input(
+                    "Nama NPC", value=default_npc, key="form_npc_input"
+                )
             else:
                 npc_input = selected_npc_option
 
-            source_input = st.text_input("Source / Cara Mendapat *", value=default_source)
-            notes_input = st.text_area("Notes (opsional)", value=default_notes, height=100)
+            source_input = st.text_input(
+                "Source / Cara Mendapat *",
+                value=default_source,
+                key="form_source_input",
+            )
+            notes_input = st.text_area(
+                "Notes (opsional)",
+                value=default_notes,
+                height=100,
+                key="form_notes_input",
+            )
 
-        submitted = st.button("Simpan ke Database", use_container_width=True)
+        submitted = st.button(
+            "Simpan ke Database", use_container_width=True, key="form_submit_button"
+        )
 
         if submitted:
             if not name_input.strip():
@@ -494,6 +512,15 @@ with tab_form:
                             .execute()
                         )
                         st.success("Item berhasil di-update.")
+
+                    # Reset field ke nilai awal setelah sukses simpan
+                    st.session_state["form_name_input"] = ""
+                    st.session_state["form_sell_price_input"] = 0
+                    st.session_state["form_category_input"] = "Resources"
+                    st.session_state["form_npc_select"] = "(Tulis nama NPC baru)"
+                    st.session_state["form_npc_input"] = ""
+                    st.session_state["form_source_input"] = ""
+                    st.session_state["form_notes_input"] = ""
 
                     reset_data_cache_and_rerun()
 
