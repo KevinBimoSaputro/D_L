@@ -2,3 +2,4 @@ streamlit==1.32.0
 pandas==2.2.0
 python-dotenv==1.0.1
 st-supabase-connection==2.1.0
+gotrue==2.12.4
