@@ -412,6 +412,21 @@ with tab_form:
             default_npc = selected_item_row.get("npc_name") or ""
             default_notes = selected_item_row.get("notes") or ""
 
+        # Reset form state jika diminta (setelah submit berhasil)
+        if st.session_state.get("form_reset_needed"):
+            for key in [
+                "form_name_input",
+                "form_sell_price_input",
+                "form_category_input",
+                "form_npc_select",
+                "form_npc_input",
+                "form_source_input",
+                "form_notes_input",
+            ]:
+                if key in st.session_state:
+                    del st.session_state[key]
+            st.session_state["form_reset_needed"] = False
+
         form_col1, form_col2 = st.columns(2)
 
         with form_col1:
@@ -550,14 +565,8 @@ with tab_form:
                         )
                         st.success("Item berhasil di-update.")
 
-                    # Reset field ke nilai awal setelah sukses simpan
-                    st.session_state["form_name_input"] = ""
-                    st.session_state["form_sell_price_input"] = 0
-                    st.session_state["form_category_input"] = "Resources"
-                    st.session_state["form_npc_select"] = "(Tulis nama NPC baru)"
-                    st.session_state["form_npc_input"] = ""
-                    st.session_state["form_source_input"] = ""
-                    st.session_state["form_notes_input"] = ""
+                    # Minta reset form pada rerun berikutnya
+                    st.session_state["form_reset_needed"] = True
 
                     reset_data_cache_and_rerun()
 
