@@ -69,10 +69,7 @@ def init_realtime_subscription():
         st.session_state["realtime_channel"] = channel
     except Exception:
         # Realtime opsional; jangan blokir app kalau gagal
-        st.warning(
-            "Realtime Supabase tidak aktif. "
-            "Pastikan Realtime di-enable untuk tabel `dinkum_items` (opsional)."
-        )
+        pass
 
 
 init_realtime_subscription()
@@ -527,9 +524,19 @@ with tab_form:
                 key="form_notes_input",
             )
 
-        submitted = st.button(
-            "Simpan ke Database", use_container_width=True, key="form_submit_button"
-        )
+        btn_col1, btn_col2 = st.columns(2)
+        with btn_col1:
+            submitted = st.button(
+                "Simpan ke Database", use_container_width=True, key="form_submit_button"
+            )
+        with btn_col2:
+            reset_clicked = st.button(
+                "Kosongkan Form", use_container_width=True, key="form_reset_button"
+            )
+
+        if reset_clicked:
+            st.session_state["form_reset_needed"] = True
+            st.rerun()
 
         if submitted:
             if not name_input.strip():
